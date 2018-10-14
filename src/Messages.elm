@@ -2,14 +2,14 @@ module Messages exposing (BookUpdate(..), Msg(..))
 
 import Draggable
 import Keyboard exposing (KeyEvent)
-import Model exposing (MyDragState, Widget)
+import Model exposing (MyDragState, Position, Widget)
 
 
 type Msg
     = OnDragBy Draggable.Delta
-    | OnDragStart MyDragState
+    | OnDragStart (Draggable.Msg ()) MyDragState
     | OnDragEnd
-    | DragMsg (Draggable.Msg MyDragState)
+    | DragMsg (Draggable.Msg ())
     | UpdateBook BookUpdate
     | KeyPressed KeyEvent
     | NoOp

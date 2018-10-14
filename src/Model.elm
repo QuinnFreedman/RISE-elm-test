@@ -1,4 +1,4 @@
-module Model exposing (Book, Model, MyDragState(..), Page, Widget, init)
+module Model exposing (Book, Model, MyDragState(..), Page, Position, Widget, init)
 
 import Draggable
 import SelectList exposing (SelectList)
@@ -6,7 +6,7 @@ import SelectList exposing (SelectList)
 
 type alias Model =
     { book : Book
-    , drag : Draggable.State MyDragState
+    , drag : Draggable.State ()
     , myDragState : Maybe MyDragState
     , undoStack : List Book
     , redoStack : List Book
@@ -39,6 +39,12 @@ type MyDragState
     | ResizingWidgetRight { id : String, delta : Float }
     | ResizingWidgetLeft { id : String, delta : Float }
     | DraggingSelection { initialX : Float, initialY : Float, dx : Float, dy : Float }
+
+
+type alias Position =
+    { x : Float
+    , y : Float
+    }
 
 
 init : Model

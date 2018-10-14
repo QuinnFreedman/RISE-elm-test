@@ -1,19 +1,13 @@
-module DragHelpers exposing (dragStopped, dragged, getWidgetId, handleDrag, transformWidget)
+module DragHelpers exposing (dragStopped, dragged, getWidgetId, handleDrag, handleDragWithStartPos, transformWidget)
 
 import Draggable
 import Html.Styled
 import Html.Styled.Attributes as Attributes
 import Json.Decode as Decode exposing (Decoder)
 import Messages exposing (BookUpdate(..), Msg(..))
-import Model exposing (Model, MyDragState(..), Widget)
+import Model exposing (Model, MyDragState(..), Position, Widget)
 import ModelUtils exposing (getWidgetById)
 import Util exposing (equalsMaybe, filterMaybe, thenFire)
-
-
-type alias Position =
-    { x : Float
-    , y : Float
-    }
 
 
 mouseOffsetDecoder : Decoder Position
@@ -25,16 +19,16 @@ mouseOffsetDecoder =
 
 handleDrag : MyDragState -> Html.Styled.Attribute Msg
 handleDrag dragState =
-    Attributes.fromUnstyled <| Draggable.mouseTrigger dragState DragMsg
+    Attributes.fromUnstyled <|
+        Draggable.customMouseTrigger mouseOffsetDecoder
+            (\dragMsg pos -> OnDragStart dragMsg dragState)
 
 
-
-{-
-   handleCustomDrag : MyDragState -> Html.Styled.Attribute Msg
-   handleCustomDrag dragState =
-       Attributes.fromUnstyled <| Draggable.customMouseTrigger dragState DragMsg
-           , Draggable. mouseOffsetDecoder StartPathAndDrag
--}
+handleDragWithStartPos : (Position -> MyDragState) -> Html.Styled.Attribute Msg
+handleDragWithStartPos initDragState =
+    Attributes.fromUnstyled <|
+        Draggable.customMouseTrigger mouseOffsetDecoder
+            (\dragMsg pos -> OnDragStart dragMsg (initDragState pos))
 
 
 updateDragState : MyDragState -> ( Float, Float ) -> MyDragState

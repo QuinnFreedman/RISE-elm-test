@@ -1,14 +1,12 @@
-module Main exposing (init, main, update, view)
+module Main exposing (main)
 
 import Browser
 import Css exposing (..)
-import DragHelpers exposing (dragStopped, dragged, handleDrag)
+import DragHelpers exposing (dragStopped, dragged, handleDrag, handleDragWithStartPos)
 import Draggable
 import Draggable.Events exposing (onDragBy, onDragEnd, onDragStart)
 import Html
-import Html.Styled exposing (..)
-import Html.Styled.Attributes as Attributes exposing (css, href, src)
-import Html.Styled.Events exposing (onClick)
+import Html.Styled exposing (toUnstyled)
 import Json.Decode as Decode exposing (Decoder)
 import Keyboard exposing (subscribeKeyPressed)
 import Messages exposing (Msg(..))
@@ -16,6 +14,7 @@ import Model exposing (..)
 import ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
 import SelectList
 import Util exposing (styleSheet)
+import View exposing (view)
 import Widget exposing (renderDraggableWidget)
 
 
@@ -35,11 +34,10 @@ init flags =
     )
 
 
-dragConfig : Draggable.Config MyDragState Msg
+dragConfig : Draggable.Config () Msg
 dragConfig =
     Draggable.customConfig
         [ onDragBy OnDragBy
-        , onDragStart OnDragStart
         , onDragEnd OnDragEnd
         ]
 
@@ -52,8 +50,12 @@ update msg model =
             , Cmd.none
             )
 
-        OnDragStart dragState ->
-            ( { model | myDragState = Just dragState }, Cmd.none )
+        OnDragStart dragMsg dragState ->
+            let
+                updatedModel =
+                    { model | myDragState = Just dragState }
+            in
+            Draggable.update dragConfig dragMsg updatedModel
 
         OnDragEnd ->
             dragStopped msg model
@@ -78,35 +80,6 @@ update msg model =
         NoOp ->
             -- ( model, Cmd.none )
             Debug.todo ""
-
-
-view : Model -> Html Msg
-view model =
-    div
-        [ css
-            [ backgroundColor (rgb 255 255 255)
-            , width (pct 100)
-            , height (pct 100)
-            , position absolute
-            ]
-
-        -- , handleDrag (DraggingSelection {initialX = 0, initialY = 0, dx = 0, dy = 0 })
-        ]
-        ([ styleSheet "/reset.css"
-         , div
-            [ css
-                [ position absolute
-                , fontFamily monospace
-                ]
-            ]
-            [ text (Debug.toString model)
-            ]
-         ]
-            ++ ((SelectList.selected model.book.pages).widgets
-                    |> List.map
-                        (\w -> renderDraggableWidget w model.myDragState)
-               )
-        )
 
 
 subscriptions : Model -> Sub Msg
