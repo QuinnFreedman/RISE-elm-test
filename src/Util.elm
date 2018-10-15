@@ -1,8 +1,16 @@
-module Util exposing (equalsMaybe, filterMaybe, styleSheet, thenFire, updateSelected)
+module Util exposing
+    ( equalsMaybe
+    , filterMaybe
+    , normalizeRect
+    , styleSheet
+    , thenFire
+    , updateSelected
+    )
 
 import Html exposing (node)
 import Html.Attributes exposing (href, rel)
 import Html.Styled exposing (Html, fromUnstyled)
+import Model exposing (Rect)
 import SelectList exposing (Position(..), SelectList)
 import Task
 
@@ -58,3 +66,20 @@ updateSelected f =
                 _ ->
                     item
         )
+
+
+normalizeRect : Rect -> Rect
+normalizeRect rect =
+    let
+        fixedY =
+            if rect.height < 0 then
+                { rect | y = rect.y + rect.height, height = -rect.height }
+
+            else
+                rect
+    in
+    if fixedY.width < 0 then
+        { fixedY | x = fixedY.x + fixedY.width, width = -fixedY.width }
+
+    else
+        fixedY

@@ -9,7 +9,7 @@ import Html.Styled.Events exposing (onClick)
 import Messages exposing (Msg(..))
 import Model exposing (..)
 import SelectList
-import Util exposing (styleSheet)
+import Util exposing (normalizeRect, styleSheet)
 import Widget exposing (renderDraggableWidget)
 
 
@@ -22,7 +22,7 @@ view model =
             , height (pct 100)
             , position absolute
             ]
-        , handleDragWithStartPos (\pos -> DraggingSelection { initialX = pos.x, initialY = pos.y, dx = 0, dy = 0 })
+        , handleDragWithStartPos (\pos -> DraggingSelection { x = pos.x, y = pos.y, width = 0, height = 0 })
         ]
         ([ styleSheet "/reset.css"
          , renderSelectionRect model.myDragState
@@ -37,7 +37,11 @@ view model =
          ]
             ++ ((SelectList.selected model.book.pages).widgets
                     |> List.map
-                        (\w -> renderDraggableWidget w model.myDragState)
+                        (\w ->
+                            renderDraggableWidget w
+                                model.myDragState
+                                model.selectedWidgets
+                        )
                )
         )
 
@@ -45,21 +49,29 @@ view model =
 renderSelectionRect : Maybe MyDragState -> Html Msg
 renderSelectionRect dragState =
     case dragState of
-        Just (DraggingSelection { initialX, initialY, dx, dy }) ->
-            div
-                [ css
-                    [ borderStyle dashed
-                    , borderWidth (px 4)
-                    , borderColor (rgb 0 255 255)
-                    , position absolute
-                    , boxSizing borderBox
-                    , top (px initialY)
-                    , left (px initialX)
-                    , width (px dx)
-                    , height (px dy)
+        Just (DraggingSelection irregularRect) ->
+            let
+                rect =
+                    normalizeRect irregularRect
+            in
+            if not (rect.width == 0 && rect.height == 0) then
+                div
+                    [ css
+                        [ borderStyle dashed
+                        , borderWidth (px 4)
+                        , borderColor (rgb 0 255 255)
+                        , position absolute
+                        , boxSizing borderBox
+                        , top (px rect.y)
+                        , left (px rect.x)
+                        , width (px rect.width)
+                        , height (px rect.height)
+                        ]
                     ]
-                ]
-                []
+                    []
+
+            else
+                div [] []
 
         _ ->
             div [] []

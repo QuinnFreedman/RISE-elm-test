@@ -50,7 +50,11 @@ updateDragState oldDragState ( dx, dy ) =
             ResizingWidgetLeft { s | delta = s.delta + dx }
 
         DraggingSelection s ->
-            DraggingSelection { s | dx = s.dx + dx, dy = s.dy + dy }
+            DraggingSelection
+                { s
+                    | width = s.width + dx
+                    , height = s.height + dy
+                }
 
 
 dragged : Maybe MyDragState -> ( Float, Float ) -> Maybe MyDragState

@@ -13,6 +13,7 @@ import Messages exposing (Msg(..))
 import Model exposing (..)
 import ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
 import SelectList
+import Set
 import Util exposing (styleSheet)
 import View exposing (view)
 import Widget exposing (renderDraggableWidget)
@@ -63,23 +64,25 @@ update msg model =
         DragMsg dragMsg ->
             Draggable.update dragConfig dragMsg model
 
+        SelectWidget id ->
+            ( { model | selectedWidgets = Set.singleton id }, Cmd.none )
+
         UpdateBook bookUpdate ->
             ( updateBookAndPushUndo bookUpdate model, Cmd.none )
 
         KeyPressed { key, ctrlKey, shiftKey } ->
             case ( ctrlKey, shiftKey, key ) of
-                ( True, False, "z" ) ->
+                ( False, False, "z" ) ->
                     ( undo model, Cmd.none )
 
-                ( True, False, "y" ) ->
+                ( False, False, "y" ) ->
                     ( redo model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         NoOp ->
-            -- ( model, Cmd.none )
-            Debug.todo ""
+            ( model, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

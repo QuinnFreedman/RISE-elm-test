@@ -1,7 +1,17 @@
-module Model exposing (Book, Model, MyDragState(..), Page, Position, Widget, init)
+module Model exposing
+    ( Book
+    , Model
+    , MyDragState(..)
+    , Page
+    , Position
+    , Rect
+    , Widget
+    , init
+    )
 
 import Draggable
 import SelectList exposing (SelectList)
+import Set exposing (Set)
 
 
 type alias Model =
@@ -10,6 +20,7 @@ type alias Model =
     , myDragState : Maybe MyDragState
     , undoStack : List Book
     , redoStack : List Book
+    , selectedWidgets : Set String
     }
 
 
@@ -32,13 +43,21 @@ type alias Widget =
     }
 
 
+type alias Rect =
+    { x : Float
+    , y : Float
+    , width : Float
+    , height : Float
+    }
+
+
 type MyDragState
     = MovingWidget { id : String, dx : Float, dy : Float }
     | ResizingWidgetUp { id : String, delta : Float }
     | ResizingWidgetDown { id : String, delta : Float }
     | ResizingWidgetRight { id : String, delta : Float }
     | ResizingWidgetLeft { id : String, delta : Float }
-    | DraggingSelection { initialX : Float, initialY : Float, dx : Float, dy : Float }
+    | DraggingSelection Rect
 
 
 type alias Position =
@@ -66,4 +85,5 @@ init =
     , myDragState = Nothing
     , undoStack = []
     , redoStack = []
+    , selectedWidgets = Set.empty
     }

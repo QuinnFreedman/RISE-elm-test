@@ -12,6 +12,7 @@ type Msg
     | DragMsg (Draggable.Msg ())
     | UpdateBook BookUpdate
     | KeyPressed KeyEvent
+    | SelectWidget String
     | NoOp
 
 

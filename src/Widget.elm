@@ -5,8 +5,10 @@ import DragHelpers exposing (getWidgetId, handleDrag, transformWidget)
 import Draggable
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attributes exposing (css, href, src)
+import Html.Styled.Events as Events exposing (onClick)
 import Messages exposing (Msg(..))
 import Model exposing (..)
+import Set exposing (Set)
 import Util exposing (equalsMaybe, filterMaybe)
 
 
@@ -22,16 +24,20 @@ shouldBeDragged w dragState =
         |> Maybe.withDefault False
 
 
-renderDraggableWidget : Widget -> Maybe MyDragState -> Html Msg
-renderDraggableWidget w maybeDrag =
+renderDraggableWidget : Widget -> Maybe MyDragState -> Set String -> Html Msg
+renderDraggableWidget w maybeDrag selectedWidgets =
+    let
+        isSelected =
+            Set.member w.id selectedWidgets
+    in
     maybeDrag
         |> filterMaybe (shouldBeDragged w)
-        |> Maybe.map (\drag -> renderWidget (transformWidget drag w) True)
-        |> Maybe.withDefault (renderWidget w False)
+        |> Maybe.map (\drag -> renderWidget (transformWidget drag w) True isSelected)
+        |> Maybe.withDefault (renderWidget w False isSelected)
 
 
-renderWidget : Widget -> Bool -> Html Msg
-renderWidget w isDragged =
+renderWidget : Widget -> Bool -> Bool -> Html Msg
+renderWidget w isDragged isSelected =
     div
         [ css
             [ position absolute
@@ -53,7 +59,11 @@ renderWidget w isDragged =
                  , width (pct 100)
                  , height (pct 100)
                  ]
-                    ++ (if isDragged then
+                    ++ (if isSelected then
+                            [ boxShadow5 zero zero (px 4) (px 2) (rgb 0 180 255)
+                            ]
+
+                        else if isDragged then
                             [ cursor grabbing
                             , boxShadow5 zero zero (px 14) (px 2) (rgba 0 0 0 0.3)
                             ]
@@ -63,6 +73,7 @@ renderWidget w isDragged =
                        )
                 )
             , handleDrag (MovingWidget { id = w.id, dx = 0, dy = 0 })
+            , onClick (SelectWidget w.id)
             ]
             [ text w.id
             ]
