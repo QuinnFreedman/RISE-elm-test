@@ -1,7 +1,6 @@
 module Selection exposing (handleStopDraggingSelection)
 
-import Model exposing (Model, MyDragState(..), Rect)
-import SelectList
+import Model exposing (Model, MyDragState(..), Rect, getSelectedPage)
 import Set
 import Util exposing (normalizeRect)
 import WidgetUtils exposing (getBoundingRect)
@@ -24,7 +23,7 @@ updateSelected selection model =
             normalizeRect selection
 
         page =
-            SelectList.selected model.book.pages
+            getSelectedPage model
 
         selected =
             page.widgets

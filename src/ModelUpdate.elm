@@ -1,7 +1,7 @@
 module ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
 
 import Model exposing (Book, BookUpdate(..), Model, Page, Widget)
-import SelectList exposing (Position(..), selected)
+import SelectList exposing (Position(..))
 import Util exposing (updateSelected)
 
 

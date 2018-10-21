@@ -10,7 +10,6 @@ import Json.Decode as Decode exposing (Decoder)
 import Keyboard exposing (subscribeKeyPressed)
 import Model exposing (..)
 import ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
-import SelectList
 import Set
 import Util exposing (styleSheet)
 import View exposing (view)

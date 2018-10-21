@@ -7,7 +7,6 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attributes exposing (css, href, src)
 import Html.Styled.Events exposing (onClick)
 import Model exposing (..)
-import SelectList
 import Util exposing (normalizeRect, styleSheet)
 import Widget exposing (renderDraggableWidget)
 
@@ -34,7 +33,7 @@ view model =
             [ text (Debug.toString model)
             ]
          ]
-            ++ ((SelectList.selected model.book.pages).widgets
+            ++ ((getSelectedPage model).widgets
                     |> List.map
                         (\w ->
                             renderDraggableWidget w

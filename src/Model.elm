@@ -8,6 +8,7 @@ module Model exposing
     , Position
     , Rect
     , Widget
+    , getSelectedPage
     , init
     )
 
@@ -111,3 +112,8 @@ type Msg
 
 type BookUpdate
     = UpdateWidgets (List Widget)
+
+
+getSelectedPage : Model -> Page
+getSelectedPage model =
+    SelectList.selected model.book.pages

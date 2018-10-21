@@ -5,8 +5,7 @@ module WidgetUtils exposing
     , isBeingDragged
     )
 
-import Model exposing (Model, MyDragState(..), Rect, Widget)
-import SelectList
+import Model exposing (Model, MyDragState(..), Rect, Widget, getSelectedPage)
 import Set exposing (Set)
 
 
@@ -30,7 +29,7 @@ getDraggedWidgets : Model -> List Widget
 getDraggedWidgets model =
     case model.myDragState of
         Just dragState ->
-            (SelectList.selected model.book.pages).widgets
+            (getSelectedPage model).widgets
                 |> List.filter (isBeingDragged model.selectedWidgets dragState)
 
         Nothing ->
