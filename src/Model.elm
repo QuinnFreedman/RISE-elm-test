@@ -1,19 +1,18 @@
 module Model exposing
     ( Book
-    , BookUpdate(..)
     , Model
-    , Msg(..)
     , MyDragState(..)
     , Page
     , Position
     , Rect
     , Widget
+    , WidgetType(..)
     , getSelectedPage
     , init
     )
 
+import Css exposing (Color, rgb)
 import Drag exposing (MouseEvent)
-import Keyboard exposing (KeyEvent)
 import SelectList exposing (SelectList)
 import Set exposing (Set)
 
@@ -44,7 +43,19 @@ type alias Widget =
     , y : Float
     , width : Float
     , height : Float
+    , backgroundColor : Color
+    , borderColor : Color
+    , borderWidth : Float
+    , borderRadius : Float
+    , padding : Float
+    , widgetType : WidgetType
     }
+
+
+type WidgetType
+    = TextShapeWidget String
+    | ImageWidget String
+    | VideoWidget String
 
 
 type alias Rect =
@@ -81,12 +92,24 @@ init =
                       , y = 200
                       , width = 80
                       , height = 80
+                      , backgroundColor = rgb 255 100 200
+                      , borderColor = rgb 0 0 0
+                      , borderWidth = 2
+                      , borderRadius = 10
+                      , padding = 10
+                      , widgetType = TextShapeWidget "test"
                       }
                     , { id = "test2"
                       , x = 400
                       , y = 300
-                      , width = 100
-                      , height = 70
+                      , width = 260
+                      , height = 170
+                      , backgroundColor = rgb 255 100 0
+                      , borderColor = rgb 0 0 0
+                      , borderWidth = 0
+                      , borderRadius = 0
+                      , padding = 10
+                      , widgetType = TextShapeWidget "## Markdown\n\n* It will be easy to add a **full** _rich text_ editor in `html` but for now I'm using markdown"
                       }
                     ]
                 }
@@ -97,21 +120,6 @@ init =
     , redoStack = []
     , selectedWidgets = Set.empty
     }
-
-
-type Msg
-    = OnDragBy Drag.Position
-    | OnDragStart MyDragState
-    | OnDragEnd
-    | OnClickDraggable MyDragState MouseEvent
-    | DragMsg (Drag.DragMsg MyDragState)
-    | UpdateBook BookUpdate
-    | KeyPressed KeyEvent
-    | NoOp
-
-
-type BookUpdate
-    = UpdateWidgets (List Widget)
 
 
 getSelectedPage : Model -> Page

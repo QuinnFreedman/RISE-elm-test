@@ -9,7 +9,8 @@ module DragHelpers exposing
 import Drag
 import Html.Styled
 import Html.Styled.Attributes as Attributes
-import Model exposing (BookUpdate(..), Model, Msg(..), MyDragState(..), Position, Widget)
+import Messages exposing (BookUpdate(..), Msg(..))
+import Model exposing (Model, MyDragState(..), Position, Widget)
 import ModelUtils exposing (getWidgetById)
 import Selection exposing (handleStopDraggingSelection)
 import Util exposing (chainUpdate, equalsMaybe, filterMaybe, thenFire)

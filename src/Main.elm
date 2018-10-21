@@ -8,6 +8,7 @@ import Html
 import Html.Styled exposing (toUnstyled)
 import Json.Decode as Decode exposing (Decoder)
 import Keyboard exposing (subscribeKeyPressed)
+import Messages exposing (Msg(..))
 import Model exposing (..)
 import ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
 import Set

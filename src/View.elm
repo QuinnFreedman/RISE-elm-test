@@ -6,6 +6,7 @@ import Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attributes exposing (css, href, src)
 import Html.Styled.Events exposing (onClick)
+import Messages exposing (Msg)
 import Model exposing (..)
 import Util exposing (normalizeRect, styleSheet)
 import Widget exposing (renderDraggableWidget)
@@ -23,6 +24,7 @@ view model =
         , handleDragWithStartPos (\pos -> DraggingSelection { x = pos.x, y = pos.y, width = 0, height = 0 })
         ]
         ([ styleSheet "/reset.css"
+         , styleSheet "/markdown.css"
          , renderSelectionRect model.myDragState
          , div
             [ css

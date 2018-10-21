@@ -2,9 +2,12 @@ module Widget exposing (renderDraggableWidget)
 
 import Css exposing (..)
 import DragHelpers exposing (handleDrag, transformWidget)
+import Html.Attributes
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attributes exposing (css, href, src)
 import Html.Styled.Events as Events exposing (onClick)
+import Markdown
+import Messages exposing (Msg(..))
 import Model exposing (..)
 import Set exposing (Set)
 import Util exposing (equalsMaybe, filterMaybe)
@@ -46,9 +49,16 @@ renderWidget w isDragged isSelected =
         , dragBar w Right
         , div
             [ css
-                ([ backgroundColor (rgb 0 255 255)
-                 , width (pct 100)
+                ([ width (pct 100)
                  , height (pct 100)
+                 , boxSizing borderBox
+                 , backgroundColor w.backgroundColor
+                 , borderColor w.borderColor
+                 , borderStyle solid
+                 , borderWidth (px w.borderWidth)
+                 , borderRadius (px w.borderRadius)
+                 , padding (px w.padding)
+                 , overflow hidden
                  ]
                     ++ (if isDragged then
                             [ cursor grabbing
@@ -68,9 +78,20 @@ renderWidget w isDragged isSelected =
                 )
             , handleDrag (MovingWidget { id = w.id, dx = 0, dy = 0 })
             ]
-            [ text w.id
+            [ getWidgetContent w
             ]
         ]
+
+
+getWidgetContent : Widget -> Html msg
+getWidgetContent widget =
+    case widget.widgetType of
+        TextShapeWidget innerHtml ->
+            Html.Styled.fromUnstyled <|
+                Markdown.toHtml [ Html.Attributes.class "markdown" ] innerHtml
+
+        _ ->
+            text "TODO"
 
 
 type Direction
