@@ -1,27 +1,18 @@
 module Widget exposing (renderDraggableWidget)
 
 import Css exposing (..)
-import DragHelpers exposing (getWidgetId, handleDrag, transformWidget)
-import Draggable
+import DragHelpers exposing (handleDrag, transformWidget)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attributes exposing (css, href, src)
 import Html.Styled.Events as Events exposing (onClick)
-import Messages exposing (Msg(..))
 import Model exposing (..)
 import Set exposing (Set)
 import Util exposing (equalsMaybe, filterMaybe)
+import WidgetUtils exposing (isBeingDragged)
 
 
 dragMargin =
     5
-
-
-shouldBeDragged : Widget -> MyDragState -> Bool
-shouldBeDragged w dragState =
-    dragState
-        |> getWidgetId
-        |> Maybe.map (\id -> id == w.id)
-        |> Maybe.withDefault False
 
 
 renderDraggableWidget : Widget -> Maybe MyDragState -> Set String -> Html Msg
@@ -31,7 +22,7 @@ renderDraggableWidget w maybeDrag selectedWidgets =
             Set.member w.id selectedWidgets
     in
     maybeDrag
-        |> filterMaybe (shouldBeDragged w)
+        |> filterMaybe (\drag -> isBeingDragged selectedWidgets drag w)
         |> Maybe.map (\drag -> renderWidget (transformWidget drag w) True isSelected)
         |> Maybe.withDefault (renderWidget w False isSelected)
 
@@ -59,11 +50,7 @@ renderWidget w isDragged isSelected =
                  , width (pct 100)
                  , height (pct 100)
                  ]
-                    ++ (if isSelected then
-                            [ boxShadow5 zero zero (px 4) (px 2) (rgb 0 180 255)
-                            ]
-
-                        else if isDragged then
+                    ++ (if isDragged then
                             [ cursor grabbing
                             , boxShadow5 zero zero (px 14) (px 2) (rgba 0 0 0 0.3)
                             ]
@@ -71,9 +58,15 @@ renderWidget w isDragged isSelected =
                         else
                             []
                        )
+                    ++ (if isSelected then
+                            [ boxShadow5 zero zero (px 4) (px 2) (rgb 0 180 255)
+                            ]
+
+                        else
+                            []
+                       )
                 )
             , handleDrag (MovingWidget { id = w.id, dx = 0, dy = 0 })
-            , onClick (SelectWidget w.id)
             ]
             [ text w.id
             ]

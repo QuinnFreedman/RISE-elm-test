@@ -1,34 +1,33 @@
-module DragHelpers exposing (dragStopped, dragged, getWidgetId, handleDrag, handleDragWithStartPos, transformWidget)
+module DragHelpers exposing
+    ( dragStopped
+    , dragged
+    , handleDrag
+    , handleDragWithStartPos
+    , transformWidget
+    )
 
-import Draggable
+import Drag
 import Html.Styled
 import Html.Styled.Attributes as Attributes
-import Json.Decode as Decode exposing (Decoder)
-import Messages exposing (BookUpdate(..), Msg(..))
-import Model exposing (Model, MyDragState(..), Position, Widget)
+import Model exposing (BookUpdate(..), Model, Msg(..), MyDragState(..), Position, Widget)
 import ModelUtils exposing (getWidgetById)
-import Util exposing (equalsMaybe, filterMaybe, thenFire)
-
-
-mouseOffsetDecoder : Decoder Position
-mouseOffsetDecoder =
-    Decode.map2 Position
-        (Decode.field "offsetX" Decode.float)
-        (Decode.field "offsetY" Decode.float)
+import Selection exposing (handleStopDraggingSelection)
+import Util exposing (chainUpdate, equalsMaybe, filterMaybe, thenFire)
+import WidgetUtils exposing (getDraggedWidgets, getWidgetId)
 
 
 handleDrag : MyDragState -> Html.Styled.Attribute Msg
 handleDrag dragState =
     Attributes.fromUnstyled <|
-        Draggable.customMouseTrigger mouseOffsetDecoder
-            (\dragMsg pos -> OnDragStart dragMsg dragState)
+        Drag.handleDrag (\_ -> dragState) DragMsg
 
 
 handleDragWithStartPos : (Position -> MyDragState) -> Html.Styled.Attribute Msg
 handleDragWithStartPos initDragState =
     Attributes.fromUnstyled <|
-        Draggable.customMouseTrigger mouseOffsetDecoder
-            (\dragMsg pos -> OnDragStart dragMsg (initDragState pos))
+        Drag.handleDrag
+            (\e -> initDragState { x = e.offsetX, y = e.offsetY })
+            DragMsg
 
 
 updateDragState : MyDragState -> ( Float, Float ) -> MyDragState
@@ -66,46 +65,37 @@ dragStopped : Msg -> Model -> ( Model, Cmd Msg )
 dragStopped msg model =
     case model.myDragState of
         Just dragState ->
-            let
-                widgetId =
-                    getWidgetId dragState
-
-                maybeWidget =
-                    widgetId |> Maybe.andThen (getWidgetById model)
-            in
-            case maybeWidget of
-                Just widget ->
-                    ( { model | myDragState = Nothing }
-                    , thenFire (UpdateBook (PutWidget (transformWidget dragState widget)))
-                    )
-
-                Nothing ->
-                    ( { model | myDragState = Nothing }, Cmd.none )
+            ( model, Cmd.none )
+                |> chainUpdate (\m -> handleStopDraggingWidget dragState m)
+                |> chainUpdate (\m -> handleStopDraggingSelection dragState m)
 
         Nothing ->
             ( model, Cmd.none )
 
 
-getWidgetId : MyDragState -> Maybe String
-getWidgetId drag =
-    case drag of
-        MovingWidget { id } ->
-            Just id
+handleStopDraggingWidget : MyDragState -> Model -> ( Model, Cmd Msg )
+handleStopDraggingWidget dragState model =
+    let
+        widgetId =
+            getWidgetId dragState
 
-        ResizingWidgetUp { id } ->
-            Just id
+        maybeWidget =
+            widgetId |> Maybe.andThen (getWidgetById model)
+    in
+    case maybeWidget of
+        Just widget ->
+            ( { model | myDragState = Nothing }
+            , thenFire
+                (UpdateBook
+                    (getDraggedWidgets model
+                        |> List.map (transformWidget dragState)
+                        |> UpdateWidgets
+                    )
+                )
+            )
 
-        ResizingWidgetDown { id } ->
-            Just id
-
-        ResizingWidgetRight { id } ->
-            Just id
-
-        ResizingWidgetLeft { id } ->
-            Just id
-
-        DraggingSelection _ ->
-            Nothing
+        Nothing ->
+            ( { model | myDragState = Nothing }, Cmd.none )
 
 
 transformWidget : MyDragState -> Widget -> Widget

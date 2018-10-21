@@ -1,6 +1,8 @@
 module Model exposing
     ( Book
+    , BookUpdate(..)
     , Model
+    , Msg(..)
     , MyDragState(..)
     , Page
     , Position
@@ -9,14 +11,15 @@ module Model exposing
     , init
     )
 
-import Draggable
+import Drag exposing (MouseEvent)
+import Keyboard exposing (KeyEvent)
 import SelectList exposing (SelectList)
 import Set exposing (Set)
 
 
 type alias Model =
     { book : Book
-    , drag : Draggable.State ()
+    , drag : Drag.DragState MyDragState
     , myDragState : Maybe MyDragState
     , undoStack : List Book
     , redoStack : List Book
@@ -78,12 +81,33 @@ init =
                       , width = 80
                       , height = 80
                       }
+                    , { id = "test2"
+                      , x = 400
+                      , y = 300
+                      , width = 100
+                      , height = 70
+                      }
                     ]
                 }
         }
-    , drag = Draggable.init
+    , drag = Drag.init
     , myDragState = Nothing
     , undoStack = []
     , redoStack = []
     , selectedWidgets = Set.empty
     }
+
+
+type Msg
+    = OnDragBy Drag.Position
+    | OnDragStart MyDragState
+    | OnDragEnd
+    | OnClickDraggable MyDragState MouseEvent
+    | DragMsg (Drag.DragMsg MyDragState)
+    | UpdateBook BookUpdate
+    | KeyPressed KeyEvent
+    | NoOp
+
+
+type BookUpdate
+    = UpdateWidgets (List Widget)

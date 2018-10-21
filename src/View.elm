@@ -6,7 +6,6 @@ import Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attributes exposing (css, href, src)
 import Html.Styled.Events exposing (onClick)
-import Messages exposing (Msg(..))
 import Model exposing (..)
 import SelectList
 import Util exposing (normalizeRect, styleSheet)
@@ -54,24 +53,20 @@ renderSelectionRect dragState =
                 rect =
                     normalizeRect irregularRect
             in
-            if not (rect.width == 0 && rect.height == 0) then
-                div
-                    [ css
-                        [ borderStyle dashed
-                        , borderWidth (px 4)
-                        , borderColor (rgb 0 255 255)
-                        , position absolute
-                        , boxSizing borderBox
-                        , top (px rect.y)
-                        , left (px rect.x)
-                        , width (px rect.width)
-                        , height (px rect.height)
-                        ]
+            div
+                [ css
+                    [ borderStyle dashed
+                    , borderWidth (px 4)
+                    , borderColor (rgb 0 255 255)
+                    , position absolute
+                    , boxSizing borderBox
+                    , top (px rect.y)
+                    , left (px rect.x)
+                    , width (px rect.width)
+                    , height (px rect.height)
                     ]
-                    []
-
-            else
-                div [] []
+                ]
+                []
 
         _ ->
             div [] []

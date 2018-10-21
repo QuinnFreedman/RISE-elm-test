@@ -2,14 +2,12 @@ module Main exposing (main)
 
 import Browser
 import Css exposing (..)
+import Drag
 import DragHelpers exposing (dragStopped, dragged, handleDrag, handleDragWithStartPos)
-import Draggable
-import Draggable.Events exposing (onDragBy, onDragEnd, onDragStart)
 import Html
 import Html.Styled exposing (toUnstyled)
 import Json.Decode as Decode exposing (Decoder)
 import Keyboard exposing (subscribeKeyPressed)
-import Messages exposing (Msg(..))
 import Model exposing (..)
 import ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
 import SelectList
@@ -35,37 +33,46 @@ init flags =
     )
 
 
-dragConfig : Draggable.Config () Msg
+dragConfig : Drag.DragConfig MyDragState Msg
 dragConfig =
-    Draggable.customConfig
-        [ onDragBy OnDragBy
-        , onDragEnd OnDragEnd
-        ]
+    { onDragStart = OnDragStart
+    , onDragged = OnDragBy
+    , onDragStopped = OnDragEnd
+    , onClick = OnClickDraggable
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnDragBy delta ->
-            ( { model | myDragState = dragged model.myDragState delta }
+            ( { model | myDragState = dragged model.myDragState ( delta.x, delta.y ) }
             , Cmd.none
             )
 
-        OnDragStart dragMsg dragState ->
-            let
-                updatedModel =
-                    { model | myDragState = Just dragState }
-            in
-            Draggable.update dragConfig dragMsg updatedModel
+        OnDragStart dragState ->
+            ( { model | myDragState = Just dragState }, Cmd.none )
 
         OnDragEnd ->
             dragStopped msg model
 
         DragMsg dragMsg ->
-            Draggable.update dragConfig dragMsg model
+            let
+                ( newDragState, cmd ) =
+                    Drag.update dragMsg dragConfig model.drag
+            in
+            ( { model | drag = newDragState }, cmd )
 
-        SelectWidget id ->
-            ( { model | selectedWidgets = Set.singleton id }, Cmd.none )
+        OnClickDraggable myDragState mouseEvent ->
+            case myDragState of
+                MovingWidget w ->
+                    ( { model | selectedWidgets = Set.singleton w.id }, Cmd.none )
+
+                DraggingSelection _ ->
+                    ( { model | selectedWidgets = Set.empty }, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
         UpdateBook bookUpdate ->
             ( updateBookAndPushUndo bookUpdate model, Cmd.none )
@@ -88,6 +95,6 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions { drag } =
     Sub.batch
-        [ Draggable.subscriptions DragMsg drag
+        [ Drag.subscriptions drag DragMsg
         , subscribeKeyPressed KeyPressed
         ]

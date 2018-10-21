@@ -1,7 +1,6 @@
 module ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
 
-import Messages exposing (BookUpdate(..))
-import Model exposing (Book, Model, Page, Widget)
+import Model exposing (Book, BookUpdate(..), Model, Page, Widget)
 import SelectList exposing (Position(..), selected)
 import Util exposing (updateSelected)
 
@@ -9,8 +8,8 @@ import Util exposing (updateSelected)
 updateBook : BookUpdate -> Book -> Book
 updateBook msg book =
     case msg of
-        PutWidget widget ->
-            putWidget widget book
+        UpdateWidgets widgets ->
+            widgets |> List.foldl putWidget book
 
 
 updateBookAndPushUndo : BookUpdate -> Model -> Model

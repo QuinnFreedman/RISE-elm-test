@@ -1,5 +1,6 @@
 module Util exposing
-    ( equalsMaybe
+    ( chainUpdate
+    , equalsMaybe
     , filterMaybe
     , normalizeRect
     , styleSheet
@@ -13,6 +14,7 @@ import Html.Styled exposing (Html, fromUnstyled)
 import Model exposing (Rect)
 import SelectList exposing (Position(..), SelectList)
 import Task
+import Tuple exposing (first, second)
 
 
 styleSheet : String -> Html msg
@@ -83,3 +85,18 @@ normalizeRect rect =
 
     else
         fixedY
+
+
+chainUpdate : (modelType -> ( modelType, Cmd msg )) -> ( modelType, Cmd msg ) -> ( modelType, Cmd msg )
+chainUpdate update old =
+    let
+        new =
+            update (first old)
+
+        newModel =
+            first new
+
+        newCmd =
+            Cmd.batch [ second old, second new ]
+    in
+    ( newModel, newCmd )
