@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Main</title>
+	<link rel="stylesheet" href="reset.css">
+	<link rel="stylesheet" href="markdown.css">
+	<script src="main.js"></script>
+</head>
+
+<body>
+	<div id="elm"></div>
+
+	<script>
+		var app = Elm.Main.init({
+			node: document.getElementById('elm')
+		});
+
+		document.body.addEventListener(
+			'dragover',
+			function handleDragOver(evt) {
+				evt.stopPropagation()
+				evt.preventDefault()
+				evt.dataTransfer.dropEffect = 'copy'
+			},
+			false
+		)
+		document.body.addEventListener(
+			'drop',
+			function (evt) {
+				evt.stopPropagation()
+				evt.preventDefault()
+				var files = evt.dataTransfer.files  // FileList object.
+				if (files.length > 0) {
+					var file = files[0]                 // File     object.
+					app.ports.fileDropped.send(file.name)
+				}
+			},
+			false
+		)
+	</script>
+
+</body>
+
+</html>

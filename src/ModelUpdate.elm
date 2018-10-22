@@ -1,9 +1,14 @@
-module ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
+module ModelUpdate exposing
+    ( redo
+    , undo
+    , updateBookAndPushUndo
+    )
 
 import Messages exposing (BookUpdate(..))
-import Model exposing (Book, Model, Page, Widget)
+import Model exposing (Book, Model, Page, Widget, WidgetType(..))
 import SelectList exposing (Position(..))
 import Util exposing (updateSelected)
+import WidgetUtils exposing (initWidget)
 
 
 updateBook : BookUpdate -> Book -> Book
@@ -11,6 +16,12 @@ updateBook msg book =
     case msg of
         UpdateWidgets widgets ->
             widgets |> List.foldl putWidget book
+
+        UpdateWidget widget ->
+            putWidget widget book
+
+        InsertWidgetFromFile path ->
+            insertWidgetFromFile path book
 
 
 updateBookAndPushUndo : BookUpdate -> Model -> Model
@@ -48,6 +59,36 @@ redo model =
 
         [] ->
             model
+
+
+getNewId : Book -> ( String, Book )
+getNewId book =
+    let
+        id =
+            String.fromInt book.widgetIdCounter
+
+        newBook =
+            { book | widgetIdCounter = book.widgetIdCounter + 1 }
+    in
+    ( id, newBook )
+
+
+insertWidgetFromFile : String -> Book -> Book
+insertWidgetFromFile path book =
+    let
+        ( id, newBook ) =
+            getNewId book
+
+        newWidget =
+            initWidget ("image-" ++ id) (ImageWidget path) 400 300 200 200
+    in
+    updateSelectedPage
+        (\page ->
+            { page
+                | widgets = page.widgets ++ [ newWidget ]
+            }
+        )
+        newBook
 
 
 putWidget : Widget -> Book -> Book

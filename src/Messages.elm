@@ -1,8 +1,8 @@
 module Messages exposing (BookUpdate(..), Msg(..))
 
-import Model exposing (..)
 import Drag exposing (MouseEvent)
 import Keyboard exposing (KeyEvent)
+import Model exposing (..)
 
 
 type Msg
@@ -18,3 +18,5 @@ type Msg
 
 type BookUpdate
     = UpdateWidgets (List Widget)
+    | UpdateWidget Widget
+    | InsertWidgetFromFile String

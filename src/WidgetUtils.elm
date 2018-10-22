@@ -2,10 +2,12 @@ module WidgetUtils exposing
     ( getBoundingRect
     , getDraggedWidgets
     , getWidgetId
+    , initWidget
     , isBeingDragged
     )
 
-import Model exposing (Model, MyDragState(..), Rect, Widget, getSelectedPage)
+import Css exposing (rgb)
+import Model exposing (Model, MyDragState(..), Rect, Widget, WidgetType, getSelectedPage)
 import Set exposing (Set)
 
 
@@ -65,3 +67,19 @@ getWidgetId drag =
 
         DraggingSelection _ ->
             Nothing
+
+
+initWidget : String -> WidgetType -> Float -> Float -> Float -> Float -> Widget
+initWidget id widgetType x y width height =
+    { id = id
+    , x = x
+    , y = y
+    , width = width
+    , height = height
+    , backgroundColor = rgb 255 255 255
+    , borderColor = rgb 0 0 0
+    , borderWidth = 0
+    , borderRadius = 0
+    , padding = 0
+    , widgetType = widgetType
+    }

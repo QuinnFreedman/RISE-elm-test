@@ -1,73 +1,100 @@
 module View exposing (view)
 
 import Css exposing (..)
+import Css.Global
 import DragHelpers exposing (dragStopped, dragged, handleDrag, handleDragWithStartPos)
-import Html
-import Html.Styled exposing (..)
+import Html.Styled exposing (Html, div, text)
 import Html.Styled.Attributes as Attributes exposing (css, href, src)
-import Html.Styled.Events exposing (onClick)
-import Messages exposing (Msg)
+import Messages exposing (Msg(..))
 import Model exposing (..)
-import Util exposing (normalizeRect, styleSheet)
-import Widget exposing (renderDraggableWidget)
+import Util exposing (styleSheet)
+import View.PageView exposing (viewPage)
+import View.PropertiesPaneView exposing (viewPropertiesPane)
 
 
 view : Model -> Html Msg
 view model =
     div
         [ css
-            [ backgroundColor (rgb 255 255 255)
+            [ height (pct 100)
             , width (pct 100)
-            , height (pct 100)
-            , position absolute
+            , display table
             ]
-        , handleDragWithStartPos (\pos -> DraggingSelection { x = pos.x, y = pos.y, width = 0, height = 0 })
         ]
-        ([ styleSheet "/reset.css"
-         , styleSheet "/markdown.css"
-         , renderSelectionRect model.myDragState
-         , div
-            [ css
-                [ position absolute
-                , fontFamily monospace
+        [ --styles
+          Css.Global.global
+            [ Css.Global.body
+                [ width (pct 100)
+                , height (pct 100)
+                ]
+            , Css.Global.html
+                [ width (pct 100)
+                , height (pct 100)
                 ]
             ]
-            [ text (Debug.toString model)
+        , styleSheet "/reset.css"
+        , styleSheet "/markdown.css"
+
+        --header
+        , div
+            [ css
+                [ display tableRow
+                , height (px 100)
+                ]
             ]
-         ]
-            ++ ((getSelectedPage model).widgets
-                    |> List.map
-                        (\w ->
-                            renderDraggableWidget w
-                                model.myDragState
-                                model.selectedWidgets
-                        )
-               )
-        )
-
-
-renderSelectionRect : Maybe MyDragState -> Html Msg
-renderSelectionRect dragState =
-    case dragState of
-        Just (DraggingSelection irregularRect) ->
-            let
-                rect =
-                    normalizeRect irregularRect
-            in
-            div
+            [ viewHeader model ]
+        , div
+            [ css
+                [ height (pct 100)
+                , width (pct 100)
+                , display table
+                ]
+            ]
+            [ -- left sidebar
+              div
                 [ css
-                    [ borderStyle dashed
-                    , borderWidth (px 4)
-                    , borderColor (rgb 0 255 255)
-                    , position absolute
-                    , boxSizing borderBox
-                    , top (px rect.y)
-                    , left (px rect.x)
-                    , width (px rect.width)
-                    , height (px rect.height)
+                    [ display tableCell
+                    , width (px 200)
+                    , verticalAlign top
                     ]
                 ]
-                []
+                [ viewPagesSidebar model
+                ]
 
-        _ ->
-            div [] []
+            -- center content
+            , div
+                [ css [ display tableCell ] ]
+                [ viewPage model
+                ]
+
+            -- right sidebar
+            , div
+                [ css
+                    [ display tableCell
+                    , width (px 300)
+                    , verticalAlign top
+                    ]
+                ]
+                [ viewPropertiesPane model
+                ]
+            ]
+
+        --footer
+        , div
+            [ css
+                [ display tableRow
+                , height (px 100)
+                ]
+            ]
+            [ text "footer" ]
+        ]
+
+
+viewHeader : Model -> Html msg
+viewHeader model =
+    text "Header"
+
+
+viewPagesSidebar : Model -> Html msg
+viewPagesSidebar model =
+    text "Pages"

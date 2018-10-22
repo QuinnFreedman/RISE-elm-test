@@ -8,13 +8,13 @@ import Html
 import Html.Styled exposing (toUnstyled)
 import Json.Decode as Decode exposing (Decoder)
 import Keyboard exposing (subscribeKeyPressed)
-import Messages exposing (Msg(..))
+import Messages exposing (BookUpdate(..), Msg(..))
 import Model exposing (..)
 import ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
+import Port exposing (fileDropped)
 import Set
 import Util exposing (styleSheet)
 import View exposing (view)
-import Widget exposing (renderDraggableWidget)
 
 
 main =
@@ -89,6 +89,7 @@ update msg model =
                     ( model, Cmd.none )
 
         NoOp ->
+            -- Debug.todo "NoOp"
             ( model, Cmd.none )
 
 
@@ -97,4 +98,5 @@ subscriptions { drag } =
     Sub.batch
         [ Drag.subscriptions drag DragMsg
         , subscribeKeyPressed KeyPressed
+        , fileDropped (UpdateBook << InsertWidgetFromFile)
         ]

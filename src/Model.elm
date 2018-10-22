@@ -29,6 +29,7 @@ type alias Model =
 
 type alias Book =
     { pages : SelectList Page
+    , widgetIdCounter : Int
     }
 
 
@@ -113,6 +114,7 @@ init =
                       }
                     ]
                 }
+        , widgetIdCounter = 0
         }
     , drag = Drag.init
     , myDragState = Nothing

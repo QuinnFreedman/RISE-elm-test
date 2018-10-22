@@ -1,4 +1,4 @@
-module Widget exposing (renderDraggableWidget)
+module View.WidgetView exposing (renderDraggableWidget)
 
 import Css exposing (..)
 import DragHelpers exposing (handleDrag, transformWidget)
@@ -89,6 +89,22 @@ getWidgetContent widget =
         TextShapeWidget innerHtml ->
             Html.Styled.fromUnstyled <|
                 Markdown.toHtml [ Html.Attributes.class "markdown" ] innerHtml
+
+        ImageWidget src ->
+            div
+                [ css
+                    [ backgroundColor (rgba 100 100 100 0.3)
+                    , width (pct 100)
+                    , height (pct 100)
+                    , color (rgb 50 50 50)
+                    , padding (px 12)
+                    , fontFamily sansSerif
+                    , boxSizing borderBox
+                    ]
+                ]
+                [ div [ css [ fontSize (px 24), paddingBottom (px 8) ] ] [ text src ]
+                , div [ css [ fontSize (px 12) ] ] [ text "For security, it is impossible to acces the local file stystem from javascript in the browser. However, once we switch to Electron, it will be easy." ]
+                ]
 
         _ ->
             text "TODO"
