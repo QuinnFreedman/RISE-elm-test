@@ -41,6 +41,14 @@ renderWidget w isDragged isSelected =
             , height <| px (w.height + 2 * dragMargin)
             , padding (px dragMargin)
             , boxSizing borderBox
+            , zIndex <|
+                int
+                    (if isDragged then
+                        999
+
+                     else
+                        w.zIndex
+                    )
             ]
         ]
         [ dragBar w Up

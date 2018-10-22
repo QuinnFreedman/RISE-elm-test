@@ -82,4 +82,5 @@ initWidget id widgetType x y width height =
     , borderRadius = 0
     , padding = 0
     , widgetType = widgetType
+    , zIndex = 1
     }

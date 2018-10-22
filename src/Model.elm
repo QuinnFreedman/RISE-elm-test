@@ -50,6 +50,7 @@ type alias Widget =
     , borderRadius : Float
     , padding : Float
     , widgetType : WidgetType
+    , zIndex : Int
     }
 
 
@@ -99,6 +100,7 @@ init =
                       , borderRadius = 10
                       , padding = 10
                       , widgetType = TextShapeWidget "test"
+                      , zIndex = 1
                       }
                     , { id = "test2"
                       , x = 400
@@ -111,6 +113,7 @@ init =
                       , borderRadius = 0
                       , padding = 10
                       , widgetType = TextShapeWidget "## Markdown\n\n* It will be easy to add a **full** _rich text_ editor in `html` but for now I'm using markdown"
+                      , zIndex = 1
                       }
                     ]
                 }

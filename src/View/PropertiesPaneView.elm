@@ -203,5 +203,9 @@ viewPropertiesForWidget widget =
                 "Y Position"
                 widget.y
                 (\x -> { widget | y = x })
+            , numberInput
+                "Layer"
+                (toFloat widget.zIndex)
+                (\x -> { widget | zIndex = Basics.floor x })
             ]
         ]
