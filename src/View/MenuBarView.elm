@@ -39,27 +39,22 @@ getTabContent tab =
                 [ text "File" ]
 
             Edit ->
-                [ menuButton
-                    [ onClick Undo ]
-                    [ text "Undo"
-                    ]
-                , menuButton
-                    [ onClick Redo ]
-                    [ text "Redo" ]
-                , menuButton []
-                    [ text "Cut"
-                    ]
-                , menuButton []
-                    [ text "Copy"
-                    ]
-                , menuButton []
-                    [ text "Paste"
-                    ]
+                [ onClickMenuButton "Undo" Undo
+                , onClickMenuButton "Redo" Redo
+                , onClickMenuButton "Cut" Cut
+                , onClickMenuButton "Copy" Copy
+                , onClickMenuButton "Paste" Paste
                 ]
 
             Insert ->
                 [ text "File" ]
         )
+
+
+onClickMenuButton string msg =
+    menuButton
+        [ onClick msg ]
+        [ text string ]
 
 
 menuButton =

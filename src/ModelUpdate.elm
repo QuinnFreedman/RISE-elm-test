@@ -1,18 +1,27 @@
 module ModelUpdate exposing
-    ( redo
-    , undo
-    , updateBookAndPushUndo
+    ( handleBookUpdate
+    , handleCopy
+    , handlePaste
+    , handleRedo
+    , handleUndo
     )
 
 import Messages exposing (BookUpdate(..))
 import Model exposing (Book, Model, Page, Widget, WidgetType(..))
+import ModelUtils exposing (getWidgetById)
 import SelectList exposing (Position(..))
+import Set
 import Util exposing (updateSelected)
 import WidgetUtils exposing (initWidget)
 
 
-updateBook : BookUpdate -> Book -> Book
-updateBook msg book =
+handleBookUpdate : BookUpdate -> Model -> Model
+handleBookUpdate msg model =
+    updateBook (applyBookUpdateHelper msg model.book) model
+
+
+applyBookUpdateHelper : BookUpdate -> Book -> Book
+applyBookUpdateHelper msg book =
     case msg of
         UpdateWidgets widgets ->
             widgets |> List.foldl putWidget book
@@ -24,17 +33,17 @@ updateBook msg book =
             insertWidgetFromFile path book
 
 
-updateBookAndPushUndo : BookUpdate -> Model -> Model
-updateBookAndPushUndo msg model =
+updateBook : Book -> Model -> Model
+updateBook newBook model =
     { model
         | undoStack = model.book :: model.undoStack
         , redoStack = []
-        , book = updateBook msg model.book
+        , book = newBook
     }
 
 
-undo : Model -> Model
-undo model =
+handleUndo : Model -> Model
+handleUndo model =
     case model.undoStack of
         head :: tail ->
             { model
@@ -47,8 +56,8 @@ undo model =
             model
 
 
-redo : Model -> Model
-redo model =
+handleRedo : Model -> Model
+handleRedo model =
     case model.redoStack of
         head :: tail ->
             { model
@@ -59,6 +68,42 @@ redo model =
 
         [] ->
             model
+
+
+handleCopy : Model -> Model
+handleCopy model =
+    let
+        selectedWidgets =
+            model.selectedWidgets
+                |> Set.toList
+                |> List.filterMap (getWidgetById model)
+    in
+    { model | clipboard = selectedWidgets }
+
+
+handlePaste : Model -> Model
+handlePaste model =
+    let
+        updatedBook =
+            model.clipboard
+                |> List.map (\w -> { w | x = w.x + 50, y = w.y + 50 })
+                |> List.foldl
+                    (\widget book ->
+                        let
+                            ( id, newBook ) =
+                                getNewId book
+
+                            newWidget =
+                                { widget | id = id }
+                        in
+                        addWidgetsToCurrentPage [ newWidget ] newBook
+                    )
+                    model.book
+
+        _ =
+            Debug.log "" updatedBook.widgetIdCounter
+    in
+    updateBook updatedBook model
 
 
 getNewId : Book -> ( String, Book )
@@ -82,13 +127,18 @@ insertWidgetFromFile path book =
         newWidget =
             initWidget ("image-" ++ id) (ImageWidget path) 400 300 200 200
     in
+    addWidgetsToCurrentPage [ newWidget ] newBook
+
+
+addWidgetsToCurrentPage : List Widget -> Book -> Book
+addWidgetsToCurrentPage widgets book =
     updateSelectedPage
         (\page ->
             { page
-                | widgets = page.widgets ++ [ newWidget ]
+                | widgets = page.widgets ++ widgets
             }
         )
-        newBook
+        book
 
 
 putWidget : Widget -> Book -> Book

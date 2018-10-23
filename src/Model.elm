@@ -26,6 +26,7 @@ type alias Model =
     , redoStack : List Book
     , selectedWidgets : Set String
     , menuBarTabs : SelectList MenuBarTab
+    , clipboard : List Widget
     }
 
 
@@ -137,6 +138,7 @@ init =
     , redoStack = []
     , selectedWidgets = Set.empty
     , menuBarTabs = initMenuBarTabs
+    , clipboard = []
     }
 
 

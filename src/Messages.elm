@@ -16,6 +16,9 @@ type Msg
     | MenuTabSelected MenuBarTab
     | Undo
     | Redo
+    | Copy
+    | Cut
+    | Paste
     | NoOp
 
 

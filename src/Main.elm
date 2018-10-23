@@ -10,7 +10,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Keyboard exposing (subscribeKeyPressed)
 import Messages exposing (BookUpdate(..), Msg(..))
 import Model exposing (..)
-import ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
+import ModelUpdate exposing (handleBookUpdate, handleCopy, handlePaste, handleRedo, handleUndo)
 import Port exposing (fileDropped)
 import SelectList
 import Set
@@ -76,21 +76,30 @@ update msg model =
                     ( model, Cmd.none )
 
         UpdateBook bookUpdate ->
-            ( updateBookAndPushUndo bookUpdate model, Cmd.none )
+            ( handleBookUpdate bookUpdate model, Cmd.none )
 
         Undo ->
-            ( undo model, Cmd.none )
+            ( handleUndo model, Cmd.none )
 
         Redo ->
-            ( redo model, Cmd.none )
+            ( handleRedo model, Cmd.none )
+
+        Copy ->
+            ( handleCopy model, Cmd.none )
+
+        Paste ->
+            ( handlePaste model, Cmd.none )
+
+        Cut ->
+            Debug.todo "Cut not implemented yet"
 
         KeyPressed { key, ctrlKey, shiftKey } ->
             case ( ctrlKey, shiftKey, key ) of
                 ( False, False, "z" ) ->
-                    ( undo model, Cmd.none )
+                    ( handleUndo model, Cmd.none )
 
                 ( False, False, "y" ) ->
-                    ( redo model, Cmd.none )
+                    ( handleRedo model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
