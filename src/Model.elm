@@ -1,5 +1,6 @@
 module Model exposing
     ( Book
+    , MenuBarTab(..)
     , Model
     , MyDragState(..)
     , Page
@@ -24,6 +25,7 @@ type alias Model =
     , undoStack : List Book
     , redoStack : List Book
     , selectedWidgets : Set String
+    , menuBarTabs : SelectList MenuBarTab
     }
 
 
@@ -83,6 +85,16 @@ type alias Position =
     }
 
 
+type MenuBarTab
+    = File
+    | Edit
+    | Insert
+
+
+initMenuBarTabs =
+    SelectList.fromLists [] File [ Edit, Insert ]
+
+
 init : Model
 init =
     { book =
@@ -124,6 +136,7 @@ init =
     , undoStack = []
     , redoStack = []
     , selectedWidgets = Set.empty
+    , menuBarTabs = initMenuBarTabs
     }
 
 

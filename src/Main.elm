@@ -12,6 +12,7 @@ import Messages exposing (BookUpdate(..), Msg(..))
 import Model exposing (..)
 import ModelUpdate exposing (redo, undo, updateBookAndPushUndo)
 import Port exposing (fileDropped)
+import SelectList
 import Set
 import Util exposing (styleSheet)
 import View exposing (view)
@@ -77,6 +78,12 @@ update msg model =
         UpdateBook bookUpdate ->
             ( updateBookAndPushUndo bookUpdate model, Cmd.none )
 
+        Undo ->
+            ( undo model, Cmd.none )
+
+        Redo ->
+            ( redo model, Cmd.none )
+
         KeyPressed { key, ctrlKey, shiftKey } ->
             case ( ctrlKey, shiftKey, key ) of
                 ( False, False, "z" ) ->
@@ -88,8 +95,14 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        MenuTabSelected tab ->
+            ( { model
+                | menuBarTabs = SelectList.select ((==) tab) model.menuBarTabs
+              }
+            , Cmd.none
+            )
+
         NoOp ->
-            -- Debug.todo "NoOp"
             ( model, Cmd.none )
 
 

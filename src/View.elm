@@ -8,6 +8,7 @@ import Html.Styled.Attributes as Attributes exposing (css, href, src)
 import Messages exposing (Msg(..))
 import Model exposing (..)
 import Util exposing (styleSheet)
+import View.MenuBarView exposing (viewMenuBar)
 import View.PageView exposing (viewPage)
 import View.PropertiesPaneView exposing (viewPropertiesPane)
 
@@ -22,7 +23,9 @@ view model =
             ]
         ]
         [ --styles
-          Css.Global.global
+          styleSheet "/reset.css"
+        , styleSheet "/markdown.css"
+        , Css.Global.global
             [ Css.Global.body
                 [ width (pct 100)
                 , height (pct 100)
@@ -30,10 +33,9 @@ view model =
             , Css.Global.html
                 [ width (pct 100)
                 , height (pct 100)
+                , fontFamilies [ "Robot", "sans-serif", "sans" ]
                 ]
             ]
-        , styleSheet "/reset.css"
-        , styleSheet "/markdown.css"
 
         --header
         , div
@@ -42,7 +44,7 @@ view model =
                 , height (px 100)
                 ]
             ]
-            [ viewHeader model ]
+            [ viewMenuBar model ]
         , div
             [ css
                 [ height (pct 100)
@@ -88,11 +90,6 @@ view model =
             ]
             [ text "footer" ]
         ]
-
-
-viewHeader : Model -> Html msg
-viewHeader model =
-    text "Header"
 
 
 viewPagesSidebar : Model -> Html msg

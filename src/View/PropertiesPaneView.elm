@@ -1,7 +1,7 @@
 module View.PropertiesPaneView exposing (viewPropertiesPane)
 
 import Css exposing (..)
-import Html.Styled as Html exposing (Attribute, Html, div, fieldset, h1, label, span, styled, text)
+import Html.Styled as Html exposing (Attribute, Html, div, fieldset, h1, label, span, styled, text, textarea)
 import Html.Styled.Attributes as Attributes exposing (css, for, href, id, src, type_, value)
 import Html.Styled.Events exposing (onInput)
 import Messages exposing (BookUpdate(..), Msg(..))
@@ -20,19 +20,21 @@ menuContainer attrs children =
         , boxSizing borderBox
         ]
         attrs
-        (leftGradient 10 :: children)
+        (leftGradient 12 :: children)
 
 
 leftGradient size =
-    styled div
-        [ position absolute
-        , left (px -size)
-        , width (px size)
-        , height (pct 100)
-        , property "background-image"
-            "linear-gradient(to left, rgba(0,0,0,0.2), rgba(0,0,0,0))"
+    div
+        [ css
+            [ position absolute
+            , left (px -size)
+            , top (px 0)
+            , width (px size)
+            , height (pct 100)
+            , property "background-image"
+                "linear-gradient(to left, rgba(0,0,0,.05), rgba(0,0,0,0))"
+            ]
         ]
-        []
         []
 
 
@@ -63,7 +65,6 @@ viewSectionTitle title =
             [ position relative
             , zIndex (int 1)
             , fontSize (px 20)
-            , roboto
             , color (hex "#444444")
             , textAlign center
             , margin2 (px 12) zero
@@ -92,14 +93,9 @@ viewSectionTitle title =
         ]
 
 
-roboto =
-    fontFamilies [ "Roboto", "sans-serif", "sans" ]
-
-
 propertyLabel id str =
     styled label
         [ marginLeft (px 12)
-        , roboto
         ]
         [ for id ]
         [ text str ]
@@ -107,8 +103,7 @@ propertyLabel id str =
 
 styledInput =
     styled Html.input
-        [ roboto
-        , width (px 47)
+        [ width (px 47)
         , boxSizing borderBox
         ]
 
@@ -164,6 +159,41 @@ colorInput label val updateFun =
 
 viewPropertiesForWidget : Widget -> Html Msg
 viewPropertiesForWidget widget =
+    div []
+        [ viewGenericProperties widget
+        , case widget.widgetType of
+            TextShapeWidget text ->
+                viewTextProperties widget text
+
+            _ ->
+                div [] []
+        ]
+
+
+viewTextProperties : Widget -> String -> Html Msg
+viewTextProperties widget text =
+    div []
+        [ viewSectionTitle "Content"
+        , textarea
+            [ css
+                [ resize none
+                , width (pct 100)
+                , height (px 300)
+                ]
+            , onInput
+                (\str ->
+                    UpdateBook <|
+                        UpdateWidget
+                            { widget | widgetType = TextShapeWidget str }
+                )
+            ]
+            [ Html.text text
+            ]
+        ]
+
+
+viewGenericProperties : Widget -> Html Msg
+viewGenericProperties widget =
     div []
         [ viewSectionTitle "Basic Controls"
         , fieldset []

@@ -13,6 +13,9 @@ type Msg
     | DragMsg (Drag.DragMsg MyDragState)
     | UpdateBook BookUpdate
     | KeyPressed KeyEvent
+    | MenuTabSelected MenuBarTab
+    | Undo
+    | Redo
     | NoOp
 
 
