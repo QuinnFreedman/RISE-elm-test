@@ -1,4 +1,4 @@
-module ModelUpdate exposing
+module BookUpdateHelpers exposing
     ( handleBookUpdate
     , handleCopy
     , handlePaste
