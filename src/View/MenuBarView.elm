@@ -38,7 +38,7 @@ getTabContent tab =
     div []
         (case tab of
             File ->
-                [ text "File" ]
+                [ button "Save" SaveBook ]
 
             Edit ->
                 [ button "Undo" Undo

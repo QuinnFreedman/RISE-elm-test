@@ -192,7 +192,7 @@ viewImageProperties widget src =
             , Html.input
                 [ type_ "text"
                 , value src
-                , css [ marginLeft (px 12) ]
+            , css [ marginLeft (px 12) ]
                 , onInput
                     (\str ->
                         UpdateBook <|

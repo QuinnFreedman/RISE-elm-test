@@ -6,6 +6,7 @@ import DragHelpers exposing (dragStopped, dragged, handleDrag, handleDragWithSta
 import Messages exposing (BookUpdate(..), Msg(..))
 import Model exposing (..)
 import SelectList
+import Serialization.Serialize exposing (serialize)
 import Set
 
 
@@ -91,6 +92,13 @@ update msg model =
 
         ZoomOut ->
             ( { model | zoom = model.zoom - 25 }, Cmd.none )
+
+        SaveBook ->
+            let
+                _ =
+                    Debug.log "JSON output" (serialize model)
+            in
+            ( model, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )

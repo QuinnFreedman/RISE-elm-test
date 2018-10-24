@@ -21,6 +21,7 @@ type Msg
     | Paste
     | ZoomIn
     | ZoomOut
+    | SaveBook
     | NoOp
 
 
