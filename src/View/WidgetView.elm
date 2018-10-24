@@ -99,23 +99,54 @@ getWidgetContent widget =
                 Markdown.toHtml [ Html.Attributes.class "markdown" ] innerHtml
 
         ImageWidget src ->
-            div
-                [ css
-                    [ backgroundColor (rgba 100 100 100 0.3)
-                    , width (pct 100)
-                    , height (pct 100)
-                    , color (rgb 50 50 50)
-                    , padding (px 12)
-                    , fontFamily sansSerif
-                    , boxSizing borderBox
+            if String.startsWith "http" src then
+                img
+                    [ Attributes.src src
+                    , css
+                        [ property "object-fit" "contain"
+                        , width (pct 100)
+                        , height (pct 100)
+                        ]
                     ]
-                ]
-                [ div [ css [ fontSize (px 24), paddingBottom (px 8) ] ] [ text src ]
-                , div [ css [ fontSize (px 12) ] ] [ text "For security, it is impossible to acces the local file stystem from javascript in the browser. However, once we switch to Electron, it will be easy." ]
-                ]
+                    []
+
+            else
+                div
+                    [ css
+                        [ backgroundColor (rgba 100 100 100 0.3)
+                        , width (pct 100)
+                        , height (pct 100)
+                        , color (rgb 50 50 50)
+                        , padding (px 12)
+                        , fontFamily sansSerif
+                        , boxSizing borderBox
+                        ]
+                    ]
+                    [ div
+                        [ css [ fontSize (px 24), paddingBottom (px 8) ] ]
+                        [ text
+                            (if String.isEmpty src then
+                                "No Source"
+
+                             else
+                                src
+                            )
+                        ]
+                    , div
+                        [ css [ fontSize (px 12) ] ]
+                        [ text "For security, it is impossible to acces the local file stystem from javascript in the browser. However, once we switch to Electron, it will be easy." ]
+                    ]
 
         _ ->
-            text "TODO"
+            div
+                [ css
+                    [ width (pct 100)
+                    , height (pct 100)
+                    , backgroundColor (hex "#ff0000")
+                    ]
+                ]
+                [ text "TODO"
+                ]
 
 
 type Direction

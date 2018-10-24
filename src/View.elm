@@ -9,7 +9,8 @@ import Messages exposing (Msg(..))
 import Model exposing (..)
 import Util exposing (styleSheet)
 import View.MenuBarView exposing (viewMenuBar)
-import View.PageView exposing (viewPage)
+import View.PageView exposing (viewSelectedPage)
+import View.PagesPreviewView exposing (pagesPreview)
 import View.PropertiesPaneView exposing (viewPropertiesPane)
 
 
@@ -19,7 +20,10 @@ view model =
         [ css
             [ height (pct 100)
             , width (pct 100)
-            , display table
+            , displayFlex
+            , flexWrap noWrap
+            , flexFlow1 column
+            , alignItems stretch
             ]
         ]
         [ --styles
@@ -40,7 +44,8 @@ view model =
         --header
         , div
             [ css
-                [ display tableRow
+                [ flexGrow (int 0)
+                , flexShrink (int 0)
                 , height (px 100)
                 ]
             ]
@@ -49,32 +54,43 @@ view model =
             [ css
                 [ height (pct 100)
                 , width (pct 100)
-                , display table
+                , flexGrow (int 1)
+                , flexShrink (int 1)
+                , displayFlex
+                , flexDirection row
+                , flexWrap noWrap
+                , alignItems stretch
                 ]
             ]
             [ -- left sidebar
               div
                 [ css
-                    [ display tableCell
+                    [ flexGrow (int 0)
+                    , flexShrink (int 0)
                     , width (px 200)
-                    , verticalAlign top
                     ]
                 ]
-                [ viewPagesSidebar model
+                [ pagesPreview model.book.pages model.book.aspectRatio
                 ]
 
             -- center content
             , div
-                [ css [ display tableCell ] ]
-                [ viewPage model
+                [ css
+                    [ flexGrow (int 1)
+                    , flexShrink (int 1)
+                    , flexBasis (px 0)
+                    , position relative
+                    ]
+                ]
+                [ viewSelectedPage model
                 ]
 
             -- right sidebar
             , div
                 [ css
-                    [ display tableCell
+                    [ flexGrow (int 0)
+                    , flexShrink (int 0)
                     , width (px 300)
-                    , verticalAlign top
                     ]
                 ]
                 [ viewPropertiesPane model
@@ -82,16 +98,11 @@ view model =
             ]
 
         --footer
-        , div
-            [ css
-                [ display tableRow
-                , height (px 100)
-                ]
-            ]
-            [ text "footer" ]
+        -- , div
+        --     [ css
+        --         [ display tableRow
+        --         , height (px 100)
+        --         ]
+        --     ]
+        --     [ text "footer" ]
         ]
-
-
-viewPagesSidebar : Model -> Html msg
-viewPagesSidebar model =
-    text "Pages"

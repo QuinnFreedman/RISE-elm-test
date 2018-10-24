@@ -1,5 +1,6 @@
 module Model exposing
-    ( Book
+    ( AspectRatio
+    , Book
     , MenuBarTab(..)
     , Model
     , MyDragState(..)
@@ -27,17 +28,20 @@ type alias Model =
     , selectedWidgets : Set String
     , menuBarTabs : SelectList MenuBarTab
     , clipboard : List Widget
+    , zoom : Int
     }
 
 
 type alias Book =
     { pages : SelectList Page
+    , aspectRatio : AspectRatio
     , widgetIdCounter : Int
     }
 
 
 type alias Page =
-    { widgets : List Widget
+    { id : String
+    , widgets : List Widget
     }
 
 
@@ -86,6 +90,12 @@ type alias Position =
     }
 
 
+type alias AspectRatio =
+    { width : Float
+    , height : Float
+    }
+
+
 type MenuBarTab
     = File
     | Edit
@@ -93,7 +103,7 @@ type MenuBarTab
 
 
 initMenuBarTabs =
-    SelectList.fromLists [] File [ Edit, Insert ]
+    SelectList.fromLists [ File ] Edit [ Insert ]
 
 
 init : Model
@@ -101,7 +111,8 @@ init =
     { book =
         { pages =
             SelectList.singleton
-                { widgets =
+                { id = "-1"
+                , widgets =
                     [ { id = "test"
                       , x = 100
                       , y = 200
@@ -130,6 +141,10 @@ init =
                       }
                     ]
                 }
+        , aspectRatio =
+            { width = 1280
+            , height = 720
+            }
         , widgetIdCounter = 0
         }
     , drag = Drag.init
@@ -139,6 +154,7 @@ init =
     , selectedWidgets = Set.empty
     , menuBarTabs = initMenuBarTabs
     , clipboard = []
+    , zoom = 100
     }
 
 

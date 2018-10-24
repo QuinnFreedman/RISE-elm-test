@@ -11,38 +11,26 @@ import Set
 import Util exposing (colorFromHex, colorToHex)
 
 
-menuContainer attrs children =
+menuContainer =
     styled div
         [ position relative
         , width (pct 100)
         , height (pct 100)
         , padding (px 12)
         , boxSizing borderBox
+        , overflowY auto
+        , overflowX hidden
         ]
-        attrs
-        (leftGradient 12 :: children)
-
-
-leftGradient size =
-    div
-        [ css
-            [ position absolute
-            , left (px -size)
-            , top (px 0)
-            , width (px size)
-            , height (pct 100)
-            , property "background-image"
-                "linear-gradient(to left, rgba(0,0,0,.05), rgba(0,0,0,0))"
-            ]
-        ]
-        []
 
 
 viewPropertiesPane : Model -> Html Msg
 viewPropertiesPane model =
     case Set.toList model.selectedWidgets of
         [] ->
-            menuContainer [] [ text "Click on a widget to see its properties" ]
+            menuContainer
+                [ css [ paddingTop (px 32) ]
+                ]
+                [ text "Click on a widget to see its properties" ]
 
         id :: [] ->
             case getWidgetById model id of
@@ -165,8 +153,11 @@ viewPropertiesForWidget widget =
             TextShapeWidget text ->
                 viewTextProperties widget text
 
-            _ ->
-                div [] []
+            ImageWidget src ->
+                viewImageProperties widget src
+
+            VideoWidget src ->
+                viewImageProperties widget src
         ]
 
 
@@ -188,6 +179,28 @@ viewTextProperties widget text =
                 )
             ]
             [ Html.text text
+            ]
+        ]
+
+
+viewImageProperties : Widget -> String -> Html Msg
+viewImageProperties widget src =
+    div []
+        [ viewSectionTitle "Image/Video"
+        , div []
+            [ label [ for "src" ] [ text "Source:" ]
+            , Html.input
+                [ type_ "text"
+                , value src
+                , css [ marginLeft (px 12) ]
+                , onInput
+                    (\str ->
+                        UpdateBook <|
+                            UpdateWidget
+                                { widget | widgetType = ImageWidget str }
+                    )
+                ]
+                []
             ]
         ]
 

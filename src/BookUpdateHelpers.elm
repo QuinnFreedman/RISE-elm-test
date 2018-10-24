@@ -32,6 +32,19 @@ applyBookUpdateHelper msg book =
         InsertWidgetFromFile path ->
             insertWidgetFromFile path book
 
+        InsertWidget widgetType ->
+            insertNewWidget widgetType book
+
+        InsertPage ->
+            handleInsertPage book
+
+        SelectPage id ->
+            { book
+                | pages =
+                    book.pages
+                        |> SelectList.select (\p -> p.id == id)
+            }
+
 
 updateBook : Book -> Model -> Model
 updateBook newBook model =
@@ -40,6 +53,26 @@ updateBook newBook model =
         , redoStack = []
         , book = newBook
     }
+
+
+handleInsertPage : Book -> Book
+handleInsertPage book =
+    let
+        ( id, newBook ) =
+            getNewId book
+
+        newPage =
+            { id = id
+            , widgets = []
+            }
+
+        pages =
+            SelectList.fromLists
+                (SelectList.before newBook.pages)
+                (SelectList.selected newBook.pages)
+                (newPage :: SelectList.after newBook.pages)
+    in
+    { newBook | pages = pages }
 
 
 handleUndo : Model -> Model
@@ -99,9 +132,6 @@ handlePaste model =
                         addWidgetsToCurrentPage [ newWidget ] newBook
                     )
                     model.book
-
-        _ =
-            Debug.log "" updatedBook.widgetIdCounter
     in
     updateBook updatedBook model
 
@@ -128,6 +158,30 @@ insertWidgetFromFile path book =
             initWidget ("image-" ++ id) (ImageWidget path) 400 300 200 200
     in
     addWidgetsToCurrentPage [ newWidget ] newBook
+
+
+insertNewWidget : WidgetType -> Book -> Book
+insertNewWidget widgetType book =
+    let
+        ( id, newBook ) =
+            getNewId book
+
+        newWidget =
+            initWidget id widgetType 300 300 300 200
+
+        updatedNewWidget =
+            case widgetType of
+                TextShapeWidget _ ->
+                    { newWidget | padding = 10, borderWidth = 2 }
+
+                _ ->
+                    newWidget
+    in
+    updateSelectedPage
+        (\page ->
+            { page | widgets = page.widgets ++ [ updatedNewWidget ] }
+        )
+        newBook
 
 
 addWidgetsToCurrentPage : List Widget -> Book -> Book

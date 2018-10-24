@@ -86,5 +86,11 @@ update msg model =
             , Cmd.none
             )
 
+        ZoomIn ->
+            ( { model | zoom = model.zoom + 25 }, Cmd.none )
+
+        ZoomOut ->
+            ( { model | zoom = model.zoom - 25 }, Cmd.none )
+
         NoOp ->
             ( model, Cmd.none )

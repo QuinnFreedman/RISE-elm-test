@@ -1,12 +1,14 @@
 module View.MenuBarView exposing (viewMenuBar)
 
 import Css exposing (..)
-import Html.Styled as Html exposing (Attribute, Html, button, div, li, styled, text, ul)
+import Html.Styled as Html exposing (Attribute, Html, div, li, styled, text, ul)
 import Html.Styled.Attributes as Attributes exposing (css)
 import Html.Styled.Events as Events exposing (onClick)
-import Messages exposing (Msg(..))
-import Model exposing (MenuBarTab(..), Model)
+import Messages exposing (BookUpdate(..), Msg(..))
+import Model exposing (..)
 import SelectList exposing (Position(..), SelectList)
+import View.MyButton exposing (button)
+import View.Shadows exposing (..)
 import View.TabPane exposing (tabPane)
 
 
@@ -14,7 +16,7 @@ viewMenuBar : Model -> Html Msg
 viewMenuBar model =
     div [ css [ position relative, height (pct 100) ] ]
         [ tabPane model.menuBarTabs getTabTitle getTabContent MenuTabSelected
-        , bottomShadow 12
+        , belowBottom (shadow Down) 12
         ]
 
 
@@ -39,50 +41,20 @@ getTabContent tab =
                 [ text "File" ]
 
             Edit ->
-                [ onClickMenuButton "Undo" Undo
-                , onClickMenuButton "Redo" Redo
-                , onClickMenuButton "Cut" Cut
-                , onClickMenuButton "Copy" Copy
-                , onClickMenuButton "Paste" Paste
+                [ button "Undo" Undo
+                , button "Redo" Redo
+                , button "Cut" Cut
+                , button "Copy" Copy
+                , button "Paste" Paste
                 ]
 
             Insert ->
-                [ text "File" ]
+                [ button "Page" (UpdateBook InsertPage)
+                , button "Text Widget"
+                    (UpdateBook (InsertWidget (TextShapeWidget "Hello")))
+                , button "Image Widget"
+                    (UpdateBook (InsertWidget (ImageWidget "")))
+                , button "Video Widget"
+                    (UpdateBook (InsertWidget (VideoWidget "")))
+                ]
         )
-
-
-onClickMenuButton string msg =
-    menuButton
-        [ onClick msg ]
-        [ text string ]
-
-
-menuButton =
-    styled div
-        [ lineHeight (px 34)
-        , padding2 zero (px 24)
-        , borderRadius (px 4)
-        , border3 (px 1) solid (hex "#dddddd")
-        , display inlineBlock
-        , margin2 (px 4) (px 4)
-        , cursor pointer
-        , property "background-image" "linear-gradient(to bottom, #fff, #f0f0f0)"
-        , active
-            [ property "background-image" "linear-gradient(to top, #fff, #f0f0f0)"
-            ]
-        ]
-
-
-bottomShadow size =
-    div
-        [ css
-            [ position absolute
-            , bottom (px -size)
-            , height (px size)
-            , property "background-image"
-                "linear-gradient(to bottom, rgba(0,0,0,.05), rgba(0,0,0,0))"
-            , width (pct 100)
-            , zIndex (int 9999)
-            ]
-        ]
-        []

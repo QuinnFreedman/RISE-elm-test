@@ -19,6 +19,8 @@ type Msg
     | Copy
     | Cut
     | Paste
+    | ZoomIn
+    | ZoomOut
     | NoOp
 
 
@@ -26,3 +28,6 @@ type BookUpdate
     = UpdateWidgets (List Widget)
     | UpdateWidget Widget
     | InsertWidgetFromFile String
+    | InsertWidget WidgetType
+    | InsertPage
+    | SelectPage String
