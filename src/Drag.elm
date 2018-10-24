@@ -34,7 +34,7 @@ type DragState a
 
 type DragMsg a
     = MouseDown a MouseEvent
-    | MouseDragged Position
+    | MouseDragged MouseMove
     | MouseUp
 
 
@@ -66,6 +66,14 @@ type alias Position =
     }
 
 
+type alias MouseMove =
+    { x : Float
+    , y : Float
+    , dx : Float
+    , dy : Float
+    }
+
+
 init : DragState a
 init =
     NotDragging
@@ -94,20 +102,28 @@ update msg config model =
         MouseDown userState pos ->
             ( AboutToDrag userState pos, Cmd.none )
 
-        MouseDragged newPos ->
-            case model of
-                AboutToDrag userState startEvent ->
-                    ( Dragging userState (getPos startEvent) newPos
-                    , thenFire <| config.onDragStart userState
-                    )
+        MouseDragged move ->
+            let
+                newPos =
+                    { x = move.x, y = move.y }
+            in
+            if move.dx == 0 && move.dy == 0 then
+                ( model, Cmd.none )
 
-                Dragging userState startPos oldPos ->
-                    ( Dragging userState startPos newPos
-                    , thenFire <| config.onDragged (delta oldPos newPos)
-                    )
+            else
+                case model of
+                    AboutToDrag userState startEvent ->
+                        ( Dragging userState (getPos startEvent) newPos
+                        , thenFire <| config.onDragStart userState
+                        )
 
-                NotDragging ->
-                    Debug.todo "this shouldn't happen"
+                    Dragging userState startPos oldPos ->
+                        ( Dragging userState startPos newPos
+                        , thenFire <| config.onDragged (delta oldPos newPos)
+                        )
+
+                    NotDragging ->
+                        Debug.todo "this shouldn't happen"
 
         MouseUp ->
             case model of
@@ -120,11 +136,13 @@ update msg config model =
                     ( NotDragging, thenFire config.onDragStopped )
 
 
-positionDecoder : Decoder Position
-positionDecoder =
-    Decode.map2 Position
+mouseMovedDecoder : Decoder MouseMove
+mouseMovedDecoder =
+    Decode.map4 MouseMove
         (Decode.field "pageX" Decode.float)
         (Decode.field "pageY" Decode.float)
+        (Decode.field "movementX" Decode.float)
+        (Decode.field "movementY" Decode.float)
 
 
 mousePressedDecoder : Decoder MouseEvent
@@ -165,7 +183,7 @@ subscriptions dragState envelope =
 getSubscriptions : (DragMsg a -> msg) -> Sub msg
 getSubscriptions envelope =
     [ Browser.Events.onMouseMove <|
-        Decode.map MouseDragged positionDecoder
+        Decode.map MouseDragged mouseMovedDecoder
     , Browser.Events.onMouseUp <| Decode.succeed MouseUp
     ]
         |> Sub.batch

@@ -11,7 +11,7 @@ import Messages exposing (Msg(..))
 import Model exposing (..)
 import Set exposing (Set)
 import Util exposing (equalsMaybe, filterMaybe)
-import WidgetUtils exposing (isBeingDragged)
+import WidgetUtils exposing (getWidgetId, isBeingDragged)
 
 
 dragMargin =
@@ -26,6 +26,7 @@ renderDraggableWidget w maybeDrag selectedWidgets =
     in
     maybeDrag
         |> filterMaybe (\drag -> isBeingDragged selectedWidgets drag w)
+        -- |> filterMaybe (\drag -> getWidgetId drag == Just w.id)
         |> Maybe.map (\drag -> renderWidget (transformWidget drag w) True isSelected)
         |> Maybe.withDefault (renderWidget w False isSelected)
 

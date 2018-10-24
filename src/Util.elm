@@ -6,6 +6,7 @@ module Util exposing
     , filterMaybe
     , normalizeRect
     , onDrop
+    , selectFirst
     , styleSheet
     , thenFire
     , updateSelected
@@ -234,3 +235,13 @@ colorFromHex hex =
 
         _ ->
             Nothing
+
+
+selectFirst : List a -> SelectList a
+selectFirst x =
+    case x of
+        [] ->
+            Debug.todo "This should return an error type"
+
+        head :: rest ->
+            SelectList.fromLists [] head rest

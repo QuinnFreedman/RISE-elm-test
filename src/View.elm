@@ -39,6 +39,14 @@ view model =
                 , height (pct 100)
                 , fontFamilies [ "Robot", "sans-serif", "sans" ]
                 ]
+            , Css.Global.div
+                [ property "-moz-user-select" "none"
+                , property "-webkit-user-select" "none"
+                , property "-ms-user-select" "none"
+                , property "user-select" "none"
+                , property "-o-user-select" "none"
+                , property "unselectable='on' onselectstart='return false';" ""
+                ]
             ]
 
         --header
