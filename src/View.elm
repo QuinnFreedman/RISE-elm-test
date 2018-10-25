@@ -27,8 +27,8 @@ view model =
             ]
         ]
         [ --styles
-          styleSheet "/reset.css"
-        , styleSheet "/markdown.css"
+          styleSheet "/css/reset.css"
+        , styleSheet "/css/markdown.css"
         , Css.Global.global
             [ Css.Global.body
                 [ width (pct 100)
