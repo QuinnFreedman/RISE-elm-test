@@ -8,6 +8,8 @@
 
 3. If you want to install Elm globally you can run `npm i -g elm` (make sure npm's bin package directory is in your PATH). But, you can also use the project-local binary at `./node_modules/.bin/elm`. There is a `npm` script for this; just run `npm run elm --` (You need the `--` to pass arguments to elm).
 
+> 3.5 to install all of the *Elm* app's dependencies, run `elm install`. This should have happened automatically after `npm install`.
+
 4. To compile the elm app, run `npm run build`.
 
 5. To launch the electron app, run `npm start`.
@@ -18,6 +20,14 @@
 
 ## Editor
 
-Right now, VSCode and IntelliJ were the only editors I could find that supported Elm 19. Atom's support is great though when it catches up.
+Right now, VSCode and IntelliJ were the only editors I could find that supported Elm 19 and IntelliJ's plugin was buggy. Atom's support is great though when it catches up.
 
 Whatever you use, I recommend using `elm-format` to keep formatting consistent. It is also a local dependency if you don't want to install anything globally.
+
+## Files
+
+* `package.json` - defines the NodeJS project. It defines NPM dependencies and cli scripts.
+* `elm.json` - defines the Elm project and Elm dependencies.
+* `launcher.js` - The entry point for the NodeJS app. Launches electron with `index.html`.
+* `app.js` - The main code for the JavaScript side of the app. Launches the Elm app.
+* `src/` - All of the code for the Elm app. `Main.elm` is the entry point.
