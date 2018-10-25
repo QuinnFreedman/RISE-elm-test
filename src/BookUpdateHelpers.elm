@@ -17,7 +17,12 @@ import WidgetUtils exposing (initWidget)
 
 handleBookUpdate : BookUpdate -> Model -> Model
 handleBookUpdate msg model =
-    updateBook (applyBookUpdateHelper msg model.book) model
+    case msg of
+        SelectPage _ ->
+            { model | book = applyBookUpdateHelper msg model.book }
+
+        _ ->
+            updateBook (applyBookUpdateHelper msg model.book) model
 
 
 applyBookUpdateHelper : BookUpdate -> Book -> Book
