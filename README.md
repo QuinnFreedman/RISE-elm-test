@@ -1,0 +1,23 @@
+# RISE Editor -- Elm
+
+## Setup
+
+1. Install NodeJS. It should come with a version of NPM, the node package manager/build system.
+
+2. `cd` here and run `npm install`. This will install all the dependencies from `package.json`.
+
+3. If you want to install Elm globally you can run `npm i -g elm` (make sure npm's bin package directory is in your PATH). But, you can also use the project-local binary at `./node_modules/.bin/elm`. There is a `npm` script for this; just run `npm run elm --` (You need the `--` to pass arguments to elm).
+
+4. To compile the elm app, run `npm run build`.
+
+5. To launch the electron app, run `npm start`.
+
+> Note: Elm 19 added caching and partial builds to the compiler. Sometimes they go wrong. If you get weird compiler errors or ANY runtime errors, just `rm -rf elm-stuff`. I made `npm run clean` to do this also.
+
+6. Running `elm reactor` makes a nice development server that will show you your errors in the browser in real time. But, as we get more into electron the capabilities of the browser app will probably diverge from the real app.
+
+## Editor
+
+Right now, VSCode and IntelliJ were the only editors I could find that supported Elm 19. Atom's support is great though when it catches up.
+
+Whatever you use, I recommend using `elm-format` to keep formatting consistent. It is also a local dependency if you don't want to install anything globally.

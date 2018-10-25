@@ -1,46 +1,25 @@
+<!-- 
+	This is the main/only html file for the app.
+	It just loads some static css and the javascript 
+	and gives a mounting point for the elm app.
+
+	Loaded by: `launcher.js`
+	Loads: `app.js`
+-->
 <!DOCTYPE HTML>
 <html>
 
 <head>
 	<meta charset="UTF-8">
-	<title>Main</title>
+	<title>RISE</title>
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/markdown.css">
-	<script src="main.js"></script>
+	<script src="elm_app.js"></script>
+	<script src="app.js"></script>
 </head>
 
 <body>
 	<div id="elm"></div>
-
-	<script>
-		var app = Elm.Main.init({
-			node: document.getElementById('elm')
-		});
-
-		document.body.addEventListener(
-			'dragover',
-			function handleDragOver(evt) {
-				evt.stopPropagation()
-				evt.preventDefault()
-				evt.dataTransfer.dropEffect = 'copy'
-			},
-			false
-		)
-		document.body.addEventListener(
-			'drop',
-			function (evt) {
-				evt.stopPropagation()
-				evt.preventDefault()
-				var files = evt.dataTransfer.files  // FileList object.
-				if (files.length > 0) {
-					var file = files[0]                 // File     object.
-					app.ports.fileDropped.send(file.name)
-				}
-			},
-			false
-		)
-	</script>
-
 </body>
 
 </html>
