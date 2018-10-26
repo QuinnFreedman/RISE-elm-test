@@ -4,7 +4,6 @@
   "description": "",
   "main": "launcher.js",
   "scripts": {
-    "postinstall": "node_modules/.bin/elm install",
     "test": "echo \"Error: no test specified\" && exit 1",
     "elm": "node_modules/.bin/elm",
     "elm-format": "node_modules/.bin/elm-format",

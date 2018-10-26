@@ -8,8 +8,6 @@
 
 3. If you want to install Elm globally you can run `npm i -g elm` (make sure npm's bin package directory is in your PATH). But, you can also use the project-local binary at `./node_modules/.bin/elm`. There is a `npm` script for this; just run `npm run elm --` (You need the `--` to pass arguments to elm).
 
-> 3.5 to install all of the *Elm* app's dependencies, run `elm install`. This should have happened automatically after `npm install`.
-
 4. To compile the elm app, run `npm run build`.
 
 5. To launch the electron app, run `npm start`.
