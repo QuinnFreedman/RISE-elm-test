@@ -8,7 +8,7 @@
     "elm": "node_modules/.bin/elm",
     "elm-format": "node_modules/.bin/elm-format",
     "clean": "rm -rf elm-stuff && rm elm_app.js",
-    "build": "node_modules/.bin/elm make src/Main.elm --output='elm_app.js'",
+    "build": "node_modules/.bin/elm make src/Main.elm --output=elm_app.js",
     "start": "node_modules/.bin/electron ."
   },
   "repository": {

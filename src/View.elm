@@ -3,8 +3,9 @@ module View exposing (view)
 import Css exposing (..)
 import Css.Global
 import DragHelpers exposing (dragStopped, dragged, handleDrag, handleDragWithStartPos)
-import Html.Styled exposing (Html, div, text)
+import Html.Styled as Html exposing (Html, div, text)
 import Html.Styled.Attributes as Attributes exposing (css, href, src)
+import Html.Styled.Events as Events
 import Messages exposing (Msg(..))
 import Model exposing (..)
 import Util exposing (styleSheet)
@@ -48,6 +49,7 @@ view model =
                 , property "unselectable='on' onselectstart='return false';" ""
                 ]
             ]
+        , renderDebugOutput model
 
         --header
         , div
@@ -114,3 +116,56 @@ view model =
         --     ]
         --     [ text "footer" ]
         ]
+
+
+renderDebugOutput : Model -> Html Msg
+renderDebugOutput model =
+    if model.debugShowWindow then
+        div
+            [ css
+                [ width (pct 100)
+                , height (pct 100)
+                , backgroundColor (rgba 0 0 0 0.5)
+                , position fixed
+                , top zero
+                , left zero
+                , zIndex (int 9999999)
+                ]
+            ]
+            [ div
+                [ css
+                    [ position absolute
+                    , top (pct 50)
+                    , left (pct 50)
+                    , transform (translate2 (pct -50) (pct -50))
+                    , backgroundColor (rgb 255 255 255)
+                    , borderRadius (px 12)
+                    , padding (px 12)
+                    , width (px 600)
+                    , height (px 400)
+                    , overflow auto
+                    ]
+                ]
+                [ Html.input
+                    [ Attributes.value model.debugCommand
+                    , Events.onInput DebugUpdateCmd
+                    ]
+                    []
+                , Html.button [ Events.onClick DebugSubmitCmd ] [ text "Run" ]
+                , div []
+                    [ text model.debugResult
+                    ]
+                , Html.button
+                    [ css
+                        [ position absolute
+                        , top (px 12)
+                        , right (px 12)
+                        ]
+                    , Events.onClick ToggleDebug
+                    ]
+                    [ text "X" ]
+                ]
+            ]
+
+    else
+        div [] []

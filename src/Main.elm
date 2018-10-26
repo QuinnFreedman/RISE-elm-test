@@ -6,7 +6,7 @@ import Html.Styled exposing (toUnstyled)
 import Keyboard exposing (subscribeKeyPressed)
 import Messages exposing (BookUpdate(..), Msg(..))
 import Model exposing (..)
-import Port exposing (fileDropped)
+import Ports exposing (debugExperementalElectromMsg, fileDropped)
 import Update exposing (update)
 import Util exposing (styleSheet)
 import View exposing (view)
@@ -34,4 +34,5 @@ subscriptions { drag } =
         [ Drag.subscriptions drag DragMsg
         , subscribeKeyPressed KeyPressed
         , fileDropped (UpdateBook << InsertWidgetFromFile)
+        , debugExperementalElectromMsg DebugOnRecieveResult
         ]

@@ -22,6 +22,10 @@ type Msg
     | ZoomIn
     | ZoomOut
     | SaveBook
+    | ToggleDebug
+    | DebugOnRecieveResult String
+    | DebugUpdateCmd String
+    | DebugSubmitCmd
     | NoOp
 
 

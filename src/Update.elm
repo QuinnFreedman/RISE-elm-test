@@ -5,6 +5,7 @@ import Drag
 import DragHelpers exposing (dragStopped, dragged, handleDrag, handleDragWithStartPos)
 import Messages exposing (BookUpdate(..), Msg(..))
 import Model exposing (..)
+import Ports exposing (debugExperementalSendElectromMsg)
 import SelectList
 import Serialization.Serialize exposing (serialize)
 import Set
@@ -102,3 +103,22 @@ update msg model =
 
         NoOp ->
             ( model, Cmd.none )
+
+        -- TODO DEBUG messages for interactive shell test
+        ToggleDebug ->
+            ( { model | debugShowWindow = not model.debugShowWindow }
+            , Cmd.none
+            )
+
+        DebugOnRecieveResult s ->
+            ( { model | debugResult = s }
+            , Cmd.none
+            )
+
+        DebugUpdateCmd s ->
+            ( { model | debugCommand = s }
+            , Cmd.none
+            )
+
+        DebugSubmitCmd ->
+            ( model, debugExperementalSendElectromMsg model.debugCommand )

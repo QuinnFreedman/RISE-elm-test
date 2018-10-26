@@ -29,6 +29,11 @@ type alias Model =
     , menuBarTabs : SelectList MenuBarTab
     , clipboard : List Widget
     , zoom : Int
+
+    --TODO DEBUG
+    , debugShowWindow : Bool
+    , debugCommand : String
+    , debugResult : String
     }
 
 
@@ -155,6 +160,11 @@ init =
     , menuBarTabs = initMenuBarTabs
     , clipboard = []
     , zoom = 100
+
+    --TODO DEBUG
+    , debugShowWindow = True
+    , debugCommand = "ps -a"
+    , debugResult = "Click Run to execute a command"
     }
 
 

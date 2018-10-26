@@ -3,6 +3,9 @@
  * It is loaded by index.html and instantiates the elm app.
  */
 
+const exec = require('child_process').exec
+const remote = require('electron').remote
+
 window.onload = function () {
     // Launch the elm app
     var app = Elm.Main.init({
@@ -33,6 +36,18 @@ window.onload = function () {
         },
         false
     )
+
+    app.ports.debugExperementalSendElectromMsg.subscribe((cmdString) => {
+        exec(cmdString, (error, stdout, stderr) => {
+            if (error) {
+                app.ports.debugExperementalElectromMsg.send(
+                    `${cmdString}: ■ exec error: ${error}`
+                )
+            } else {
+                app.ports.debugExperementalElectromMsg.send(`${cmdString}: ■ ${stdout}`)
+            }
+        });
+    })
 }
 
 
